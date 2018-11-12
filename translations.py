@@ -1,6 +1,8 @@
+import numpy as np
 import tensorflow as tf
-
 from tensorflow.contrib.seq2seq import *
+
+from translation_data import load_vec
 
 
 # time major: where encoder length comes first before the batch size, this will influence model specific e.g. attention see below for more details
@@ -48,6 +50,15 @@ def create_cell(rnn_size, keep_prob):
     return drop
 
 
+target_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.de.vec'
+source_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.en.vec'
+
+# using existing vocab and embedding
+src_embeddings, src_id2word, src_word2id, source_vocab = load_vec(target_embedding_path, nmax=2000000)
+tgt_embeddings, tgt_id2word, tgt_word2id, target_vocab = load_vec(source_embedding_path, nmax=2000000)
+
+
+
 class Seq2Seq:
 
     def __init__(self):
@@ -87,10 +98,17 @@ class Seq2Seq:
             self.target_sentence_length = tf.placeholder(tf.int32, shape=[self.batch_size])
 
         with tf.variable_scope('embeddings'):
-            self.encoder_embeddings = tf.get_variable("encoder_embeddings",
-                                                      [self.decoder_vocab_size, self.encoder_embedding_dim])
-            self.decoder_embeddings = tf.get_variable("decoder_embeddings",
-                                                      [self.encoder_vocab_size, self.decoder_embedding_dim])
+
+            # these are when once wants to train the embedding from scratch ..
+            # self.encoder_embeddings=tf.get_variable("encoder_embeddings", [self.decoder_vocab_size,self.encoder_embedding_dim])
+            # self.decoder_embeddings=tf.get_variable("decoder_embeddings", [self.encoder_vocab_size,self.decoder_embedding_dim])
+
+            self.encoder_embeddings = tf.get_variable(name="encoder_embedding", shape=np.shape(src_embeddings),
+                                                      initializer=tf.constant_initializer(src_embeddings),
+                                                      trainable=False)
+            self.decoder_embeddings = tf.get_variable(name="decoder_embedding", shape=np.shape(tgt_embeddings),
+                                                      initializer=tf.constant_initializer(tgt_embeddings),
+                                                      trainable=False)
 
             self.encoder_input_embeddings = tf.nn.embedding_lookup(self.encoder_embeddings,
                                                                    self.encoder_inputs)  # ouput shape [self.encoder_length, self. batch_siz, emd_dimension (300)]
