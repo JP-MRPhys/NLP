@@ -54,8 +54,8 @@ target_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.
 source_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.en.vec'
 
 # using existing vocab and embedding
-src_embeddings, src_id2word, src_word2id, source_vocab = load_vec(target_embedding_path, nmax=2000000)
-tgt_embeddings, tgt_id2word, tgt_word2id, target_vocab = load_vec(source_embedding_path, nmax=2000000)
+src_embeddings, src_id2word, src_word2id, source_vocab = load_vec(target_embedding_path, nmax=200000)
+tgt_embeddings, tgt_id2word, tgt_word2id, target_vocab = load_vec(source_embedding_path, nmax=200000)
 
 
 
@@ -67,8 +67,8 @@ class Seq2Seq:
         self.encoder_embedding_dim = 300  # add for  spacy
         self.decoder_embedding_dim = 300  # add from spacy
         self.batch_size = 256
-        self.decoder_vocab_size = 100000
-        self.encoder_vocab_size = 100000
+        self.decoder_vocab_size = 200000
+        self.encoder_vocab_size = 200000
         self.lstm_sizes = [128, 128]  # number hidden layer in each LSTM
         self.keep_prob = 0.5
 
