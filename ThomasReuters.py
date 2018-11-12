@@ -1,2 +1,2 @@
-import newsapi as newsapi
+
 

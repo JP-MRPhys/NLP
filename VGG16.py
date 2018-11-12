@@ -3,9 +3,10 @@ DAGAN implementation of the VGG16: https://github.com/nebulaV/DAGAN/blob/master/
 
 
 """
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import tensorflow as tf
+
 
 def vgg16_cnn_emb(t_image, reuse=False):
     with tf.device('/gpu:0'):
@@ -137,4 +138,4 @@ def vgg16_cnn_emb(t_image, reuse=False):
 
         network = FlattenLayer(network, name='vgg_flatten')
 
-    return conv4, network
+    return network, conv4

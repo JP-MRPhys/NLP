@@ -1,8 +1,7 @@
-import requests
-import json
 import logging as log
 import os
 
+import requests
 
 # StockTwits details
 ST_BASE_URL = 'https://api.stocktwits.com/api/2/'
@@ -10,6 +9,7 @@ ST_BASE_PARAMS = dict(access_token=os.getenv('ST_ACCESS_TOKEN'))
 
 # Example list of exchanges to limit a watchlist to
 EXCHANGES = ['NYSE', 'NASDAQ', 'NYSEMkt', 'NYSEArca']
+
 
 # ---------------------------------------------------------------------
 # Basic StockTwits interface
@@ -47,7 +47,8 @@ def add_to_watchlist(symbols, wl_id):
     symbols = ','.join(symbols)  # must be a csv list
     params = ST_BASE_PARAMS.copy()
     params['symbols'] = symbols
-    resp = requests.post_json(ST_BASE_URL + 'watchlists/{}/symbols/create.json'.format(wl_id), params=params, deadline=deadline)
+    resp = requests.post_json(ST_BASE_URL + 'watchlists/{}/symbols/create.json'.format(wl_id), params=params,
+                              deadline=deadline)
     if resp['response']['status'] == 200:
         return [s['symbol'] for s in resp['symbols']]
     else:
@@ -78,7 +79,7 @@ def clean_watchlist(wl_id):
     """ Deletes stocks to follow if they aren't part of NASDAQ or NYSE
     """
     wl = requests.get_json(ST_BASE_URL + 'watchlists/show/{}.json'.format(wl_id),
-                  params=ST_BASE_PARAMS)['watchlist']['symbols']
+                           params=ST_BASE_PARAMS)['watchlist']['symbols']
     qty_deleted = 0
     for sym in wl:
         if sym['exchange'] not in EXCHANGES:
@@ -89,7 +90,7 @@ def clean_watchlist(wl_id):
                 log.error("Error deleting symbol from watchlist: {}".format(sym))
     return qty_deleted
 
-if __name__ == '__main__':
 
-    symbols=['AAPL', 'BLK', 'BA', 'BE', 'BABA']
+if __name__ == '__main__':
+    symbols = ['AAPL', 'BLK', 'BA', 'BE', 'BABA']
     data = get_trending_stocks()

@@ -1,75 +1,69 @@
 import tensorflow as tf
-from tensorflow.python.ops import rnn_cell
-from keras.datasets import imdb as imdb
-import numpy as np
 
-from imdbDatareader import *
 
 class SentimentReviewRNN:
 
-  def __init__(self):
-    with tf.variable_scope('rnn_i/o'):
-      # use None for batch size and dynamic sequence length
-      self.inputs = tf.placeholder(tf.float32, shape=[None, None,384])
-      self.groundtruths=tf.placeholder(tf.float32, shape=[None,2])
+    def __init__(self):
+        with tf.variable_scope('rnn_i/o'):
+            # use None for batch size and dynamic sequence length
+            self.inputs = tf.placeholder(tf.float32, shape=[None, None, 384])
+            self.groundtruths = tf.placeholder(tf.float32, shape=[None, 2])
 
+        with tf.variable_scope('rnn_cell'):
+            self.cell = tf.contrib.rnn.LSTMCell(128)
+            # self.stackcell=rnn_cell.MultiRNNCell([self.cell]*3, state_is_tuple=True)
+            self.out_cell = tf.contrib.rnn.OutputProjectionWrapper(self.cell, 2)
+            # project RNN output into target class dimension
 
-    with tf.variable_scope('rnn_cell'):
-      self.cell = tf.contrib.rnn.LSTMCell(128)
-      #self.stackcell=rnn_cell.MultiRNNCell([self.cell]*3, state_is_tuple=True)
-      self.out_cell = tf.contrib.rnn.OutputProjectionWrapper(self.cell, 2)
-      #project RNN output into target class dimension
+        with tf.variable_scope('rnn_forward'):
+            # use dynamic_rnn for different length
+            self.outputs, _ = tf.nn.dynamic_rnn(
+                self.out_cell, self.inputs, dtype=tf.float32)
+            self.outputs2 = self.outputs[:, -1, :]  # only use the last output of sequence
 
-    with tf.variable_scope('rnn_forward'):
-      # use dynamic_rnn for different length
-      self.outputs, _ = tf.nn.dynamic_rnn(
-          self.out_cell, self.inputs, dtype=tf.float32)
-      self.outputs2 = self.outputs[:, -1, :]  # only use the last output of sequence
+        with tf.variable_scope('rnn_loss'):
+            # use cross_entropy as class loss
+            self.loss = tf.losses.softmax_cross_entropy(
+                onehot_labels=self.groundtruths, logits=self.outputs2)
+            self.optimizer = tf.train.AdamOptimizer(0.02).minimize(self.loss)
 
+        with tf.variable_scope('rnn_accuracy'):
+            self.accuracy = tf.contrib.metrics.accuracy(
+                labels=tf.argmax(self.groundtruths, axis=1),
+                predictions=tf.argmax(self.outputs2, axis=1))
 
-    with tf.variable_scope('rnn_loss'):
-      # use cross_entropy as class loss
-      self.loss = tf.losses.softmax_cross_entropy(
-          onehot_labels=self.groundtruths, logits=self.outputs2)
-      self.optimizer = tf.train.AdamOptimizer(0.02).minimize(self.loss)
+        self.sess = tf.Session()
+        self.sess.run(tf.global_variables_initializer())  # don't forget to initial all variables
+        self.saver = tf.train.Saver()  # a saver is for saving or restoring your trained weight
 
-    with tf.variable_scope('rnn_accuracy'):
-      self.accuracy = tf.contrib.metrics.accuracy(
-          labels=tf.argmax(self.groundtruths, axis=1),
-          predictions=tf.argmax(self.outputs2, axis=1))
+    def train(self, batch_x, batch_y):
+        fd = {}
+        fd[self.inputs] = batch_x
+        fd[self.groundtruths] = batch_y
+        # feed in input and groundtruth to get loss and update the weight via Adam optimizer
+        loss, accuracy, _ = self.sess.run(
+            [self.loss, self.accuracy, self.optimizer], fd)
 
-    self.sess = tf.Session()
-    self.sess.run(tf.global_variables_initializer())  # don't forget to initial all variables
-    self.saver = tf.train.Saver()  # a saver is for saving or restoring your trained weight
+        return loss, accuracy
 
-  def train(self, batch_x, batch_y):
-    fd = {}
-    fd[self.inputs] = batch_x
-    fd[self.groundtruths] = batch_y
-    # feed in input and groundtruth to get loss and update the weight via Adam optimizer
-    loss, accuracy, _ = self.sess.run(
-        [self.loss, self.accuracy, self.optimizer], fd)
+    def test(self, batch_x, batch_y):
+        fd = {}
+        fd[self.inputs] = batch_x
+        fd[self.groundtruths] = batch_y
+        prediction, accuracy = self.sess.run([self.outputs2, self.accuracy], fd)
 
-    return loss, accuracy
+        return prediction, accuracy
 
-  def test(self, batch_x, batch_y):
-    fd = {}
-    fd[self.inputs] = batch_x
-    fd[self.groundtruths] = batch_y
-    prediction, accuracy = self.sess.run([self.outputs2, self.accuracy], fd)
+    def save(self, e):
+        self.saver.save(self.sess, 'model/rnn/rnn_%d.ckpt' % (e + 1))
 
-    return prediction, accuracy
+    def restore(self, e):
+        self.saver.restore(self.sess, 'model/rnn/rnn_%d.ckpt' % (e))
 
-  def save(self, e):
-    self.saver.save(self.sess, 'model/rnn/rnn_%d.ckpt' % (e + 1))
-
-  def restore(self, e):
-    self.saver.restore(self.sess, 'model/rnn/rnn_%d.ckpt' % (e))
 
 if __name__ == '__main__':
-  # hyperparameter of our network
+    # hyperparameter of our network
     EPOCHS = 20
-
 
     tf.reset_default_graph()
     model = SentimentReviewRNN()
