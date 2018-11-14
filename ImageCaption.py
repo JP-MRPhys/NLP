@@ -63,9 +63,7 @@ class ImageCaption:
             self.batch_size, scope='decorder')
 
         attention_states = tf.transpose(self.encoder_outputs, [1, 0, 2])
-
         source_sequence_length = 100;  # this needs to come from input lenght..
-
         attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(self.ATTENSION_UNIT, attention_states,
                                                                    memory_sequence_length=source_sequence_length)
 
@@ -86,6 +84,10 @@ class ImageCaption:
         print("Completed loading VGG weights")
         sess.run(vgg_weights)
         print("Completed applying VGG weights to current session")
+
+    def demo_eric(self):
+        print("Does nothing..")
+        return
 
 
 if __name__ == '__main__':

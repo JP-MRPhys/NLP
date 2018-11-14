@@ -94,7 +94,6 @@ class Seq2Seq:
 
             self.source_sequence_length = tf.placeholder(tf.int32, shape=[
                 self.batch_size])  # i.e. self.decoder_length use to limit training iter while unrolling .. nneds to be corrected
-
             self.target_sentence_length = tf.placeholder(tf.int32, shape=[self.batch_size])
 
         with tf.variable_scope('embeddings'):
@@ -215,14 +214,18 @@ class Seq2Seq:
         with tf.variable_scope('rnn_loss'):
             # use cross_entropy as class loss
 
-            self.loss = tf.losses.softmax_cross_entropy(
-                onehot_labels=self.decoder_inputs,
+            self.target_labels = tf.placeholder(tf.int32, shape=[self.batch_size, self.decoder_length])
+            self.loss = tf.losses.sparse_softmax_cross_entropy(
+                labels=self.target_labels,
                 logits=self.logits)  # may need to sort out this see the comment in doc.
+
             self.optimizer = tf.train.AdamOptimizer(0.02)  # .minimize(self.loss) if no gradient clipping required
+
             self.params = tf.trainable_variables()
             self.gradients = tf.gradients(self.loss, self.params)
             self.clipped_gradients = tf.clip_by_global_norm(self.gradients, clip_norm=5.0)  # how select this value
             self.global_step = tf.Variable(0, name='global_step', trainable=False)
+
             self.train_operation = self.optimizer.apply_gradients(zip(self.clipped_gradients, self.params),
                                                                   global_step=self.global_step)
 
