@@ -3,11 +3,11 @@ import os
 import sys
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+#ßfrom flask_cors import CORS
 
 # define the app
 app = Flask(__name__)
-CORS(app)  # needed for cross-domain requests, allow everything by default
+#CORS(app)  # needed for cross-domain requests, allow everything by default
 
 # logging for heroku
 if 'DYNO' in os.environ:
