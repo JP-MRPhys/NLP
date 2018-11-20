@@ -2,7 +2,9 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.seq2seq import *
 
-from translation_data import load_vec
+from translation_data import load_glove
+
+glove_embeddings, glove_id2word, glove_word2id, glove_vocab = load_glove()
 
 
 # time major: where encoder length comes first before the batch size, this will influence model specific e.g. attention see below for more details
@@ -99,9 +101,9 @@ class Seq2Seq:
             # self.encoder_embeddings=tf.get_variable("encoder_embeddings", [self.decoder_vocab_size,self.encoder_embedding_dim])
             # self.decoder_embeddings=tf.get_variable("decoder_embeddings", [self.encoder_vocab_size,self.decoder_embedding_dim])
 
-
-            self.decoder_embeddings = tf.get_variable(name="decoder_embedding", shape=np.shape(src_embeddings),
-                                                      initializer=tf.constant_initializer(src_embeddings),
+            # embedding for the input sentense
+            self.decoder_embeddings = tf.get_variable(name="decoder_embedding", shape=np.shape(glove_embeddings),
+                                                      initializer=tf.constant_initializer(glove_embeddings),
                                                       trainable=False)
 
             self.decoder_input_embeddings = tf.nn.embedding_lookup(self.decoder_embeddings, self.decoder_inputs)
