@@ -136,6 +136,6 @@ def vgg16_cnn_emb(t_image, reuse=False):
                                       pool=tf.nn.max_pool,
                                       name='vgg_pool5')
 
-        network = FlattenLayer(network, name='vgg_flatten')
+        # network = FlattenLayer(network, name='vgg_flatten')
 
     return network, conv4

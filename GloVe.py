@@ -72,11 +72,11 @@ def word_embedding_matrix(glove_filename, vocab, dim):
 
 
 if __name__ == '__main__':
-    glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
-    dir = '/home/jehill/python/NLP/nmt-master/nmt/wmt16_en_de_preprocessed/'
+    # glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
+    # dir = '/home/jehill/python/NLP/nmt-master/nmt/wmt16_en_de_preprocessed/'
 
     # glove_vocab, glove_embed, embedding_dict = load_glove()
-    encoder_emb = word_embedding_matrix(source_vocab_file, source_vocab, dim=300)
+    #encoder_emb = word_embedding_matrix(source_vocab_file, source_vocab, dim=300)
 
     """    
     # look up our word vectors and store them as numpy arrays
