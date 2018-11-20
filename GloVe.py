@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def load_glove():
     glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
 
@@ -25,49 +22,7 @@ def load_glove():
     return glove_vocab, glove_embed, embedding_dict
 
 
-def get_vocab(datasets):
-    vocab = []
 
-    symbols = {0: 'PAD', 1: 'UNK'}
-
-    for sentence in datasets:
-        for word in sentence.split():
-            vocab.append(word.lower())
-
-    vocab = list(set(vocab))
-
-    return vocab
-
-
-# load glove or any word embedding
-def word_embedding_matrix(glove_filename, vocab, dim):
-    # first and second vector are pad and unk words
-    # glove_filename is the file containing the word embedding, can be word2vec or your favourite model.
-
-    print(vocab)
-    with open(glove_filename, 'r') as f:
-        word_vocab = []
-        embedding_matrix = []
-        word_vocab.extend(['PAD', 'UNK'])
-        embedding_matrix.append(np.random.uniform(-1.0, 1.0, (1, dim))[0])
-        embedding_matrix.append(np.random.uniform(-1.0, 1.0, (1, dim))[0])
-
-        print(np.shape(embedding_matrix))
-
-        index = 0
-        for line in f:
-            row = line.strip().split(' ')
-            word = row[0]
-
-            print(word)
-
-            if word in vocab:
-                word_vocab.append(word)
-                embed_vector = [float(i) for i in row[1:]]
-                print(np.shape(embed_vector))
-                # embedding_matrix.append(embed_vector)
-
-    return {'word_vocab': word_vocab, 'Embedding_matrix': np.reshape(embedding_matrix, [-1, dim]).astype(np.float32)}
 
 
 

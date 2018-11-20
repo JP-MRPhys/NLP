@@ -32,7 +32,7 @@ class ImageCaption:
         self.input_mask = None
         self.target_caption = None
 
-        #VGG (or your favourite CNN) encorder
+        # VGG (or your favourite CNN) encoder
         self.vgg_net, self.conv4 = vgg16_cnn_emb(self.input_image_244)
         print(self.vgg_net)
         print(self.conv4)
