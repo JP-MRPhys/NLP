@@ -4,29 +4,26 @@ Tensorflow implementation of
 
 1. Seq2Seq (machine translation)
        
-    encoder(LSTM)-decorder(LSTM) with beam search
-    
-    eng-french translation dataset
+    encoder: LSTM-
+    decorder: LSTM with beam search
+    dataset: Eng-french translation dataset
     
 2. Show attend and tell (Image Captioning) Attention modelling 	 
     
     encoder(Convnet-VGG),
-    
-    Bahdanua Attention, 
-    
-    LSTM: decorder, 
-    
-    Trained using (MS-coco dataset)
+    attention model: Bahdanua Attention, 
+    decoder: LSTM with beam search     
+    dataset: COCO 
 
-3. Sentiment Analysis, 
-     Encoder: multilayer LSTM 
-     Decoder: Classification Dense Layer
-     Trained using on imdb-dataset
+3. Sentiment Analysis
+
+     encoder: multilayer LSTM 
+     decoder: Classification Dense Layer
+     dataset: Imdb-dataset
 
 4. Template for flask API to hosting in AWS   
 
 5. Loading pre-trained word embeddings 
     
-    MUSE 
-    
-    glove 
+    fb: multilingual embeddings: MUSE 
+    Stanford: glove 
