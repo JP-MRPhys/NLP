@@ -8,3 +8,4 @@ Tensorflow implementation of
 3. Sentiment Analysis, 
   Trained on multilayer LSTM on imdb-dataset
 4. Template for flask API to hosting in AWS   
+5. Loading pre-trained word embeddings (MUSE, glove) 
