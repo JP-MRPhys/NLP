@@ -12,7 +12,7 @@
     
 ## 2. Show attend and tell (Image Captioning) 	 
     
-    encoder: (Convnet-VGG)
+    encoder: Convnet-VGG
     
     attention model: Bahdanua Attention
     
@@ -32,6 +32,6 @@
     
     facebook: multilingual embeddings: MUSE 
     
-    stanford: glove 
+    stanford: Glove 
     
 ## 5. Template for flask API to host trained model on AWS  
