@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers import fully_connected
 
-from VGG16 import vgg16_cnn_emb  # this is the VGG encorder
+from VGG16 import vgg16_cnn_emb  # this is the VGG encoder
 from translation_data import load_glove
 
 glove_embeddings, glove_id2word, glove_word2id, glove_vocab = load_glove()

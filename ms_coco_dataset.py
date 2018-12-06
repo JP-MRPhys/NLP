@@ -17,7 +17,6 @@ def download_coco():
                                              extract=True)
 
     annotation_file = os.path.dirname(annotation_zip) + '/annotations/captions_train2014.json'
-
     return annotation_file
 
 
@@ -27,7 +26,6 @@ def get_coco_datasets(number=30000):
     if not os.path.exists(os.path.abspath('.') + '/' + name_of_zip):
 
         print("Training dataset set not found downloading dataset")
-
         image_zip = tf.keras.utils.get_file(name_of_zip,
                                             cache_subdir=os.path.abspath('.'),
                                             origin='http://images.cocodataset.org/zips/train2014.zip',
@@ -88,7 +86,7 @@ def get_caption_word2vec(batch_captions, max_sequence_lenght, embedding_dict):
 
 
 def load_glove():
-    print('loading glove embeddings..')
+    print('loading glove embeddings.. takes 2 mins generally')
 
     glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
 
@@ -110,6 +108,33 @@ def load_glove():
     file.close()
 
     return glove_vocab, glove_embed, embedding_dict
+
+
+def load_glove_small():
+    print('loading glove embeddings.. takes 2 mins generally')
+
+    glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
+
+    glove_vocab = []
+    glove_embed = []
+    embedding_dict = {}
+
+    file = open(glove_filename, 'r', encoding='UTF-8')
+
+    for line in file.readlines():
+        row = line.strip().split(' ')
+        vocab_word = row[0]
+        glove_vocab.append(vocab_word)
+        embed_vector = [float(i) for i in row[1:]]  # convert to list of float
+        embedding_dict[vocab_word] = embed_vector
+        glove_embed.append(embed_vector)
+
+    print('Completed loading glove embeddings..')
+    file.close()
+
+    return glove_vocab, glove_embed, embedding_dict
+
+
 
 
 def get_embedding_vector(captions, embedding_dict, max_seq_length):
@@ -193,8 +218,6 @@ if __name__ == '__main__':
         caption = captions[idx:idx + BATCH_SIZE]
         batch_images, batch_captions = get_batch_data_image_caption(filenames, caption, word_embedding_dict,
                                                                     max_sequence_length=30)
-
         print("New batch data size")
-
         print(np.shape(batch_images))
         print(np.shape(batch_captions))
