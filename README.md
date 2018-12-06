@@ -5,7 +5,7 @@ Tensorflow implementation of
 1. Seq2Seq (machine translation)
     encoder(LSTM)-decorder(LSTM) with beam search 
     eng-french translation dataset. 
-2. Show attend and tell (Image Captioning) Attention modelling 
+2. Show attend and tell (Image Captioning) Attention modelling 	 
     encoder(Convnet-VGG),
     Bahdanua Attention, 
     LSTM: decorder, 
