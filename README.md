@@ -1,4 +1,4 @@
-# Natural Language Processing Repo 
+# Natural Language Processing
 
 Key features: Tensorflow implementation of 
 
