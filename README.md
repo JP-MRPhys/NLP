@@ -1,6 +1,6 @@
 # Natural Language Processing
 
-Key features: Tensorflow implementation of 
+ Tensorflow implementation of 
 
 ## 1. Seq2Seq (machine translation)
        
@@ -10,11 +10,11 @@ Key features: Tensorflow implementation of
     
     dataset: Eng-french translation dataset
     
-## 2. Show attend and tell (Image Captioning) Attention modelling 	 
+## 2. Show attend and tell (Image Captioning) 	 
     
-    encoder(Convnet-VGG),
+    encoder: (Convnet-VGG)
     
-    attention model: Bahdanua Attention, 
+    attention model: Bahdanua Attention
     
     decoder: LSTM with beam search     
     
@@ -34,4 +34,4 @@ Key features: Tensorflow implementation of
     
     stanford: glove 
     
-## 5. Template for flask API to hosting trained model on AWS  
+## 5. Template for flask API to host trained model on AWS  
