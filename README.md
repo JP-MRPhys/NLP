@@ -2,7 +2,7 @@
 
 Tensorflow implementation of 
 
-1. Seq2Seq (machine translation)
+# 1. Seq2Seq (machine translation)
        
     encoder: LSTM
     
@@ -10,7 +10,7 @@ Tensorflow implementation of
     
     dataset: Eng-french translation dataset
     
-2. Show attend and tell (Image Captioning) Attention modelling 	 
+# 2. Show attend and tell (Image Captioning) Attention modelling 	 
     
     encoder(Convnet-VGG),
     
@@ -20,7 +20,7 @@ Tensorflow implementation of
     
     dataset: COCO 
 
-3. Sentiment Analysis
+# 3. Sentiment Analysis
 
      encoder: multilayer LSTM 
      
@@ -28,9 +28,9 @@ Tensorflow implementation of
      
      dataset: Imdb-dataset
 
-4. Template for flask API to hosting in AWS   
+# 4. Template for flask API to hosting in AWS   
 
-5. Loading pre-trained word embeddings 
+# 5. Loading pre-trained word embeddings 
     
     facebook: multilingual embeddings: MUSE 
     
