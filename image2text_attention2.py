@@ -203,7 +203,6 @@ class image2text():
         self.saver.restore(self.sess, 'model/image2text_attention_%d.ckpt' % (e))
 
     def train_coco(self):
-
         rec_loss = []
 
         print("Training the model")
@@ -211,7 +210,7 @@ class image2text():
         for epoch in range(self.EPOCHS):
 
             # get image filenames and captions for coco dataset as shuffling from various files
-            captions, image_filenames = get_coco_datasets();
+            captions, image_filenames = get_coco_datasets()
 
             loss_train = 0
             accuracy_train = 0
