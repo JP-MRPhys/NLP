@@ -62,3 +62,29 @@ if __name__ == '__main__':
 
     word_embeddings, embedding_dict, tgt_id2word, tgt_word2id, target_vocab = load_muse(english_embedding_path,
                                                                                         nmax=200000)
+
+    """    
+    # look up our word vectors and store them as numpy arrays
+    king_vector = np.array(embedding_dict['king'])
+    man_vector = np.array(embedding_dict['man'])
+    woman_vector = np.array(embedding_dict['woman'])
+
+    # add/subtract our vectors
+
+    new_vector = king_vector - man_vector + woman_vector
+
+    print(king_vector.shape)
+
+    # here we use a scipy function to create a "tree" of word vectors
+    # that we can run queries against
+
+    tree = spatial.KDTree(glove_embed)
+
+    # run query with our new_vector to find the closest word vectors
+
+    nearest_dist, nearest_idx = tree.query(new_vector, 10)
+    nearest_words = [glove_vocab[i] for i in nearest_idx]
+    print(nearest_words)
+
+    ['king', 'queen', 'monarch', 'mother', 'princess', 'daughter', 'elizabeth', 'throne', 'kingdom', 'wife']
+    """
