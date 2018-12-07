@@ -135,9 +135,7 @@ def load_glove_small():
     return glove_vocab, glove_embed, embedding_dict
 
 
-
-
-def get_embedding_vector(captions, embedding_dict, max_seq_length):
+def get_embedding_vector(caption, embedding_dict, max_seq_length):
     """
     
     :param captions: these are input captions 
@@ -151,8 +149,12 @@ def get_embedding_vector(captions, embedding_dict, max_seq_length):
     pad_token_embedding = embedding_dict['pad']
     embedding_dim = np.shape(pad_token_embedding)[0]
     embedding_vector = np.zeros([max_seq_length, embedding_dim])
-    tokens = captions.split()
 
+    # pre-process captions
+    caption = caption.replace('.', '').replace(',', '').replace("'", "").replace('"', '')
+    caption = caption.replace('&', 'and').replace('(', '').replace(")", "").replace('-', ' ')
+
+    tokens = caption.split()
     tokens = tokens[1:]  # remove <start>
     tokens = tokens[:-1]  # remove <end>
 

@@ -27,6 +27,8 @@ class image2text():
 
         # load the glove embedding
         self.glove_vocab, self.word_embeddings, self.word_embedding_dict = load_glove()
+        # self.word_embeddings = np.random.rand(20000, 300)  # load glove for this....
+
         [self.decoder_vocab_size, self.word_embeddings_dim] = np.shape(self.word_embeddings)
 
         self.vgg = vgg16(trainable=False)  # we don't want to retrain to we set trainable to false
@@ -35,11 +37,13 @@ class image2text():
         self.istraining = tf.placeholder(tf.bool, shape=())
         self.input_images = tf.placeholder(tf.float32,
                                            shape=([None, self.image_dim1, self.image_dim2, self.image_dim3]))
-        self.caption_input = tf.placeholder(tf.int32,
-                                            shape=[None, self.max_seq_length])  # this is batch_size and sequence length
-        # self.image_features = tf.placeholder(tf.float32, shape=[self.None, self.image_embedding_dim1,self.image_embedding_dim2])
+        self.caption_input = tf.placeholder(tf.int32, shape=[None, self.max_seq_length,
+                                                             self.word_embeddings_dim])  # this is batch_size and sequence length, word embedding dim
+        self.image_features = tf.placeholder(tf.float32,
+                                             shape=[None, self.image_embedding_dim1, self.image_embedding_dim2])
 
         # we shift the captions to get target words used for calc the loss along with decoder logits
+
         self.target_words = self.caption_input[:, 1:]
         # self.mask=tf.to_float(tf.not_equal(self.target_words),self._null)  #unknown token
 
@@ -50,10 +54,12 @@ class image2text():
 
         print("Completed creating decoder embedding")
         # encoder i.e. convent (VGG)
-        self.image_features = self.vgg.pool4
+        """
+        #self.image_features = self.vgg.pool4
         self.image_features = tf.reshape(self.image_features,
                                          [tf.shape(self.image_features)[0], self.image_embedding_dim1,
                                           self.image_embedding_dim2])
+        """
         #start building the decoder
         self.decoder_cell = self.create_cell(self.lstm_hidden_units, self.keep_prob)
         self.image_features_mean = tf.reduce_mean(self.image_features, 1)  # [B, image_encoder_dim2]
@@ -120,9 +126,9 @@ class image2text():
 
         self.sess = tf.Session()
         self.saver = tf.train.Saver()  # a saver is for saving or restoring your trained weight
-        self.sess.run(tf.global_variables_initializer())  # does this over right image features ?
+        #self.sess.run(tf.global_variables_initializer())  # does this over right image features ?
         # apply VGG weights
-        self.vgg.load_weights(self.sess)
+        #self.vgg.load_weights(self.sess)
 
         print("Completed building the model")
 
@@ -213,9 +219,9 @@ class image2text():
 
             number_training_points = len(image_filenames)
 
-            for idx in range(0, number_training_points, BATCH_SIZE):
-                filenames = image_filename[idx:idx + BATCH_SIZE]
-                caption = captions[idx:idx + BATCH_SIZE]
+            for idx in range(0, number_training_points, self.BATCH_SIZE):
+                filenames = image_filenames[idx:idx + self.BATCH_SIZE]
+                caption = captions[idx:idx + self.BATCH_SIZE]
                 batch_images, batch_captions = get_batch_data_image_caption(filenames, caption,
                                                                             self.word_embedding_dict,
                                                                             max_sequence_length=self.max_seq_length)
