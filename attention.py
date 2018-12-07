@@ -81,3 +81,26 @@ def attention(inputs, attention_size, time_major=False, return_alphas=False):
     else:
         return output, alphas
 
+
+def BahdanauAttention(features, hidden_state, attention_units):
+    # features(CNN_encoder output) shape == (batch_size, 64, embedding_dim) can be other feature vectors too
+    # hidden shape == (batch_size, hidden_size)
+
+    # hidden_with_time_axis shape == (batch_size, 1, hidden_size)
+    hidden_state_with_time_axis = tf.expand_dims(hidden_state, 1)
+
+    # score shape == (batch_size, 64, hidden_size)
+    score = tf.nn.tanh(
+        tf.layers.dense(features, attention_units) + tf.layers.dense(hidden_state_with_time_axis, attention_units))
+    score = tf.layers.dense(score, 1)
+
+    # attention_weights shape == (batch_size, 64, 1)
+    # we get 1 at the last axis because we are applying score to self.V
+    attention_weights = tf.nn.softmax(score, axis=1)
+
+    # context_vector shape after sum == (batch_size, hidden_size)
+    context_vector = attention_weights * features
+
+    context_vector = tf.reduce_sum(context_vector, axis=1)
+
+    return context_vector, attention_weights
