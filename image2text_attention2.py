@@ -147,7 +147,7 @@ class image2text():
 
     def BahdanauAttention(self, features, hidden_state):
 
-        # features(CNN_encoder output) shape == (batch_size, 64, embedding_dim)
+        # features(CNN_encoder output) shape == (batch_size, 196, 512)
         # hidden shape == (batch_size, hidden_size)
 
         # hidden_with_time_axis shape == (batch_size, 1, hidden_size)
