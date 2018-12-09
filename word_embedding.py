@@ -9,6 +9,7 @@ def load_glove():
     glove_vocab = []
     glove_embed = []
     embedding_dict = {}
+    word2id = {}  # word to id mappings
 
     file = open(glove_filename, 'r', encoding='UTF-8')
 
@@ -16,14 +17,16 @@ def load_glove():
         row = line.strip().split(' ')
         vocab_word = row[0]
         glove_vocab.append(vocab_word)
+        word2id[vocab_word] = len(word2id)
         embed_vector = [float(i) for i in row[1:]]  # convert to list of float
         embedding_dict[vocab_word] = embed_vector
         glove_embed.append(embed_vector)
 
     print('Completed loading glove embeddings..')
     file.close()
+    id2word = {v: k for k, v in word2id.items()}
 
-    return glove_vocab, glove_embed, embedding_dict
+    return glove_embed, embedding_dict, word2id, id2word, glove_vocab
 
 
 def load_muse(emb_path, nmax=50000):
@@ -57,11 +60,11 @@ def load_muse(emb_path, nmax=50000):
 
 
 if __name__ == '__main__':
-    german_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.de.vec'
-    english_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.en.vec'
+    # german_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.de.vec'
+    # english_embedding_path = '/home/jehill/python/NLP/datasets/GloVE/MUSE/wiki.multi.en.vec'
+    # word_embeddings, embedding_dict, tgt_id2word, tgt_word2id, target_vocab = load_muse(english_embedding_path, nmax=200000)
 
-    word_embeddings, embedding_dict, tgt_id2word, tgt_word2id, target_vocab = load_muse(english_embedding_path,
-                                                                                        nmax=200000)
+
 
     """    
     # look up our word vectors and store them as numpy arrays

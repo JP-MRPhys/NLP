@@ -17,8 +17,8 @@ class vgg16:
         self.trainable = False
         self.imgs = tf.placeholder(tf.float32, [None, 224, 224, 3])
         self.convlayers()
-        self.fc_layers()
-        self.probs = tf.nn.softmax(self.fc3l)
+        # self.fc_layers()
+        # self.probs = tf.nn.softmax(self.fc3l)
 
         print("Completed creating the VGG16 model")
 
@@ -247,7 +247,7 @@ class vgg16:
         weight_file = '/home/jehill/python/VNETS/trained_models/VGG/vgg16_weights.npz'
         weights = np.load(weight_file)
         keys = sorted(weights.keys())
-        keys = keys[0:22]  # not apply all the weights
+        keys = keys[0:25]  # not apply all the weights
         for i, k in enumerate(keys):
             print("Applying weights for layer:", i, k, np.shape(weights[k]))
             sess.run(self.parameters[i].assign(weights[k]))

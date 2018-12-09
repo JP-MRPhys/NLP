@@ -4,10 +4,12 @@
 import json
 import os
 
-import numpy as np
-import tensorflow as tf
 from scipy import ndimage, misc
 from sklearn.utils import shuffle
+
+from VGG16 import *  # this is the VGG encoder
+
+tf.enable_eager_execution()
 
 
 def download_coco():
@@ -87,12 +89,11 @@ def get_caption_word2vec(batch_captions, max_sequence_lenght, embedding_dict):
 
 def load_glove():
     print('loading glove embeddings.. takes 2 mins generally')
-
     glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
-
     glove_vocab = []
     glove_embed = []
     embedding_dict = {}
+    word2id = {}  # word to id mappings
 
     file = open(glove_filename, 'r', encoding='UTF-8')
 
@@ -100,39 +101,16 @@ def load_glove():
         row = line.strip().split(' ')
         vocab_word = row[0]
         glove_vocab.append(vocab_word)
+        word2id[vocab_word] = len(word2id)
         embed_vector = [float(i) for i in row[1:]]  # convert to list of float
         embedding_dict[vocab_word] = embed_vector
         glove_embed.append(embed_vector)
 
     print('Completed loading glove embeddings..')
     file.close()
+    id2word = {v: k for k, v in word2id.items()}
 
-    return glove_vocab, glove_embed, embedding_dict
-
-
-def load_glove_small():
-    print('loading glove embeddings.. takes 2 mins generally')
-
-    glove_filename = '/home/jehill/python/NLP/datasets/GloVE/glove.6B.300d.txt'
-
-    glove_vocab = []
-    glove_embed = []
-    embedding_dict = {}
-
-    file = open(glove_filename, 'r', encoding='UTF-8')
-
-    for line in file.readlines():
-        row = line.strip().split(' ')
-        vocab_word = row[0]
-        glove_vocab.append(vocab_word)
-        embed_vector = [float(i) for i in row[1:]]  # convert to list of float
-        embedding_dict[vocab_word] = embed_vector
-        glove_embed.append(embed_vector)
-
-    print('Completed loading glove embeddings..')
-    file.close()
-
-    return glove_vocab, glove_embed, embedding_dict
+    return glove_embed, embedding_dict, word2id, id2word, glove_vocab
 
 
 def get_embedding_vector(caption, embedding_dict, max_seq_length):
@@ -171,12 +149,50 @@ def get_embedding_vector(caption, embedding_dict, max_seq_length):
         else:
             # pad the embedding vector
             embedding_vector[count, :] = pad_token_embedding
-            count = count + 1
 
     return embedding_vector
 
 
-def get_batch_data_image_caption(imagefiles, captions, word_embedding_dict, max_sequence_length):
+def get_word_id(caption, word2id_dict, max_seq_length):
+    """
+    :param captions: these are input captions 
+    :param word2id_dict: these are the ids of the vectors
+    :param max_seq_length: is the max_seq_length
+    :return: ids for words  [max_seq_length]
+    """
+
+    count = 0
+    unknown_token_embedding = word2id_dict['unk']
+    pad_token_embedding = word2id_dict['pad']
+
+    wordids = np.zeros([max_seq_length])
+
+    # pre-process captions
+    caption = caption.replace('.', '').replace(',', '').replace("'", "").replace('"', '')
+    caption = caption.replace('&', 'and').replace('(', '').replace(")", "").replace('-', ' ')
+
+    tokens = caption.split()
+    tokens = tokens[1:]  # remove <start>
+    tokens = tokens[:-1]  # remove <end>
+
+    for count in range(max_seq_length):
+
+        if count < len(tokens):
+            if tokens[count].lower() in word2id_dict:
+                wordids[count] = word2id_dict[tokens[count].lower()]
+
+            else:
+                # print("Unknown token " + token.lower())
+                wordids[count] = unknown_token_embedding
+
+        else:
+            # pad the embedding vector
+            wordids[count] = pad_token_embedding
+
+    return wordids
+
+
+def get_batch_data_image_caption(imagefiles, captions, max_sequence_length):
     """
     Read the images and caption to
 
@@ -186,40 +202,65 @@ def get_batch_data_image_caption(imagefiles, captions, word_embedding_dict, max_
     :return: images_array and wordvec for captions
     """
 
-    dim1 = 244
-    dim2 = 244
+    dim1 = 299
+    dim2 = 299
     dim3 = 3
-    embedding_dim = np.shape(word_embedding_dict['pad'])[0]  # 300 for glove embedding
 
+    jhhihk
     batch_images = np.zeros([len(imagefiles), dim1, dim2, dim3])
-    batch_caption_vectors = np.zeros([len(imagefiles), max_sequence_length, embedding_dim])
+batch_caption_ids = np.zeros([len(imagefiles), max_sequence_length])
 
     for i in range(len(imagefiles)):
         batch_images[i, :, :, :] = read_images(imagefiles[i], dim1, dim2)
-        batch_caption_vectors[i, :, :] = get_embedding_vector(captions[i], word_embedding_dict, max_sequence_length)
+        # batch_caption_ids[i, :] = get_word_id(captions[i], word2id_dict, max_sequence_length)
 
-    return batch_images, batch_caption_vectors
+return batch_images, batch_caption_ids
+
+
+def image_feature_model():
+    image_model = tf.keras.applications.InceptionV3(include_top=False,
+                                                    weights='imagenet')
+    new_input = image_model.input
+    hidden_layer = image_model.layers[-1].output
+
+    image_features_extract_model = tf.keras.Model(new_input, hidden_layer)
+
+    return image_features_extract_model
+
+
+def load_image(image_path):
+    img = tf.read_file(image_path)
+    img = tf.image.decode_jpeg(img, channels=3)
+    img = tf.image.resize_images(img, (299, 299))
+    img = tf.keras.applications.inception_v3.preprocess_input(img)
+    return img, image_path
+
 
 
 if __name__ == '__main__':
 
     BATCH_SIZE = 50
-    glove_vocab, glove_embed, word_embedding_dict = load_glove()
+    # glove_embed, embedding_dict, word2id_dict, id2word, glove_vocab = load_glove()
 
-    print("Glove vocab shape" + str(len(glove_vocab)))
-    print("Glove embedding shape:")
-    print(np.shape(glove_embed)[0])
+    captions, image_filename = get_coco_datasets(number=500)
 
-    captions, image_filename = get_coco_datasets();
+    image_features_extract_model = image_feature_model()
 
-    print("Number of captions" + str(len(captions)))
-    print("Number of images" + str(len(image_filename)))
+    # getting the unique images
+    encode_train = sorted(set(image_filename))
 
-    for idx in range(0, len(image_filename), BATCH_SIZE):
-        filenames = image_filename[idx:idx + BATCH_SIZE]
-        caption = captions[idx:idx + BATCH_SIZE]
-        batch_images, batch_captions = get_batch_data_image_caption(filenames, caption, word_embedding_dict,
-                                                                    max_sequence_length=30)
-        print("New batch data size")
-        print(np.shape(batch_images))
-        print(np.shape(batch_captions))
+    # feel free to change the batch_size according to your system configuration
+    image_dataset = tf.data.Dataset.from_tensor_slices(
+        encode_train).map(load_image).batch(5)
+
+    for img, path in image_dataset:
+        batch_features = image_features_extract_model(img)
+        batch_features = tf.reshape(batch_features,
+                                    (batch_features.shape[0], -1, batch_features.shape[3]))
+
+        for bf, p in zip(batch_features, path):
+            path_of_feature = p.numpy().decode("utf-8")
+            np.save(path_of_feature, bf.numpy())
+
+    for i in range(len(image_filename)):
+        o = image_feature_model(read_images(image_filename))
