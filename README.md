@@ -34,4 +34,3 @@
     
     stanford: Glove 
     
-## 5. Template for flask API to host trained model on AWS  
