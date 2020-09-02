@@ -1,4 +1,4 @@
-from ms_coco_dataset import *
+from data.ms_coco_dataset import *
 
 
 class image2text():

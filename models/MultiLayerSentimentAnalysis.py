@@ -1,7 +1,7 @@
 import tensorflow as tf
 
-from StockTwits import get_twets_data, get_training_batch_twets
-from imdbDatareader import *
+from data.StockTwits import get_twets_data, get_training_batch_twets
+from data.imdbDatareader import *
 
 
 class SentimentAnalysisMultiLayerLSTM:

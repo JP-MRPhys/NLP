@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.seq2seq import *
 
-from translation_data import load_vec
+from data.translation_data import load_vec
 
 
 # time major: where encoder length comes first before the batch size, this will influence model specific e.g. attention see below for more details

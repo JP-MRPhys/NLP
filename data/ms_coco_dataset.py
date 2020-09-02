@@ -7,7 +7,7 @@ import os
 from scipy import ndimage, misc
 from sklearn.utils import shuffle
 
-from VGG16 import *  # this is the VGG encoder
+from models.VGG16 import *  # this is the VGG encoder
 
 tf.enable_eager_execution()
 
