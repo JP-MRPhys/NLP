@@ -1,4 +1,4 @@
-# Tensorflow implementation of Natural Language Processing Algorightms
+# Tensorflow implementation of Natural Language Processing Algos
 
  
 
