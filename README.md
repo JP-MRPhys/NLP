@@ -1,6 +1,6 @@
-# Natural Language Processing
+# Tensorflow implementation of Natural Language Processing Algorightms
 
- Tensorflow implementation of 
+ 
 
 ## 1. Seq2Seq (machine translation)
        
